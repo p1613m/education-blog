@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 // connect to db
 $db = new PDO('mysql:host=localhost;dbname=blog-first', 'root', 'root');
 
@@ -6,6 +8,14 @@ $db = new PDO('mysql:host=localhost;dbname=blog-first', 'root', 'root');
  * User
  */
 $user = false;
+if(isset($_SESSION['user_id'])) {
+    $userQuery = $db->query("SELECT * FROM users WHERE id = " . intval($_SESSION['user_id']));
+    $user = $userQuery->fetch();
+}
+
+if(isset($forAuth) && !$user) {
+    redirect('login.php');
+}
 
 
 /**
