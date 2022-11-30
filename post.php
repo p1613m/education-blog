@@ -3,13 +3,21 @@ include 'includes/header.php';
 ?>
 
 <?php
-echo 'Post id: <b>' . $_GET['id'] . '</b>';
+$post = getPost($_GET['id']);
+if(!$post) {
+    redirect('index.php');
+}
 ?>
 
-<h1>Post title</h1>
-<p><b>17.11.2022</b> Author</p>
-<p>Post description</p>
-<p>Post content...</p>
+<h1><?= $post['title'] ?></h1>
+<p><b><?= $post['date'] ?></b> <?= $post['author']['name'] ?></p>
+<p><?= $post['description'] ?></p>
+<p><?= $post['content'] ?></p>
+
+<?php if(hasAccess($post)): ?>
+    <a href="edit.php?id=<?= $post['id'] ?>">Edit</a> |
+    <a href="delete.php?id=<?= $post['id'] ?>">Delete</a>
+<?php endif; ?>
 
 <?php
 include 'includes/footer.php';
