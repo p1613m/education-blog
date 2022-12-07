@@ -18,7 +18,7 @@ include 'core.php';
     <?php if ($user): ?>
         <a href="profile.php">Profile</a> |
         <a href="create.php">Create post</a> |
-        <a href="#">My posts</a> |
+        <a href="index.php?user_id=<?= $user['id'] ?>">My posts</a> |
         <a href="logout.php">Logout (<?= $user['email'] ?>)</a>
     <?php else: ?>
         <a href="registration.php">Registration</a> |
