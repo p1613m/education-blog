@@ -3,14 +3,24 @@ include 'includes/header.php';
 ?>
 
 <?php
+// идентификатор пользователя
 $userId = $_GET['user_id'] ?? null;
-$sqlString = "SELECT * FROM posts ORDER BY date DESC";
+// условие для выборки потстов определенного пользователя из БД, изначально пустое
+$userWhere = '';
+// кол-во постов на одной странице
+$perPage = 2;
+// берем текущую страницу, если не указано, то это первая страница
+$page = $_GET['page'] ?? 1;
+// вычисляем кол-во постов, которое нужно пропустить
+// для первой страницы нужно пропустить 0 постов, поэтому начинаем с 0
+$offset = ($page - 1) * $perPage;
 
+// если указан идентификатор пользователя, то меняем условие для выборки постов
 if($userId) {
-    $sqlString = "SELECT * FROM posts WHERE user_id = " . intval($userId) . " ORDER BY date DESC";
+    $userWhere = "WHERE user_id = " . intval($userId);
 }
 
-// todo: paginate
+$sqlString = "SELECT * FROM posts $userWhere ORDER BY date DESC LIMIT $perPage OFFSET $offset";
 
 $posts = $db->query($sqlString)->fetchAll();
 ?>
@@ -30,7 +40,33 @@ $posts = $db->query($sqlString)->fetchAll();
     <hr>
 <?php endforeach; ?>
 
-<!-- todo: paginate links -->
+
+<?php
+$sqlCount = "SELECT * FROM posts $userWhere";
+$postsCount = $db->query($sqlCount)->rowCount();
+$lastPage = ceil($postsCount / $perPage);
+?>
+<nav>
+    <?php if($page == 1): ?>
+        <span>Prev</span> |
+    <?php else: ?>
+        <a href="index.php?page=<?= $page - 1 ?>">Prev</a> |
+    <?php endif; ?>
+
+    <?php for($i = 1; $i <= $lastPage; $i++): ?>
+        <?php if($page == $i): ?>
+            <span><b><?= $i ?></b></span> |
+        <?php else: ?>
+            <a href="index.php?page=<?= $i ?>"><?= $i ?></a> |
+        <?php endif; ?>
+    <?php endfor; ?>
+
+    <?php if($page >= $lastPage): ?>
+        <span>Next</span>
+    <?php else: ?>
+        <a href="index.php?page=<?= $page + 1 ?>">Next</a>
+    <?php endif; ?>
+</nav>
 
 <?php
 include 'includes/footer.php';

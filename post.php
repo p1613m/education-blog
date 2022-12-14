@@ -10,7 +10,10 @@ if(!$post) {
 ?>
 
 <h1><?= $post['title'] ?></h1>
-<p><b><?= $post['date'] ?></b> <?= $post['author']['name'] ?></p>
+<p>
+    <b><?= $post['date'] ?></b>
+    <a href="index.php?user_id=<?= $post['author']['id'] ?>"><?= $post['author']['name'] ?></a>
+</p>
 <p><?= $post['description'] ?></p>
 <p><?= $post['content'] ?></p>
 
