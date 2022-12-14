@@ -13,7 +13,6 @@ if(isset($forAuth) && !$user) {
     redirect('login.php');
 }
 
-
 /**
  * Functions
  */

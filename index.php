@@ -29,6 +29,7 @@ $posts = $db->query($sqlString)->fetchAll();
     $post = preparePost($post);
     ?>
     <article>
+        <img src="<?= $post['image_path'] ?>" alt="" style="width: 300px">
         <h2><?= $post['title'] ?></h2>
         <p>
             <b><?= $post['date'] ?></b>
@@ -42,8 +43,11 @@ $posts = $db->query($sqlString)->fetchAll();
 
 
 <?php
+// SQL-запрос на получение всех постов, не забываем указать фильтр для пользователя
 $sqlCount = "SELECT * FROM posts $userWhere";
+// выполняем запрос и получаем кол-во строк
 $postsCount = $db->query($sqlCount)->rowCount();
+// вычисляем номер последней страницы, округляем в большую сторону дробную часть
 $lastPage = ceil($postsCount / $perPage);
 ?>
 <nav>
