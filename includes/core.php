@@ -62,3 +62,19 @@ function hasAccess($post) {
 
     return $user && $post && $user['id'] === $post['user_id'];
 }
+
+function uploadImage($image) {
+    // разбиваем строку название файла на массив используя разделитель '.'
+    $extensionArray = explode('.', $image['name']);
+    // получаем последний элемент массива, т.е. extension
+    $extension = $extensionArray[count($extensionArray) - 1];
+    // генерируем уникальное имя файла и подставляем расширение файла
+    $fileName = uniqid() . '.' . $extension;
+    // указываем путь к файлу от корня
+    $imagePath = 'images/' . $fileName;
+
+    // перемещаем файл из временной директории в нашу
+    move_uploaded_file($image['tmp_name'], $imagePath);
+
+    return $imagePath;
+}

@@ -39,17 +39,7 @@ if(isset($_POST['submit'])) {
     }
 
     if(count($errors) === 0) {
-        // разбиваем строку название файла на массив используя разделитель '.'
-        $extensionArray = explode('.', $image['name']);
-        // получаем последний элемент массива, т.е. extension
-        $extension = $extensionArray[count($extensionArray) - 1];
-        // генерируем уникальное имя файла и подставляем расширение файла
-        $fileName = uniqid() . '.' . $extension;
-        // указываем путь к файлу от корня
-        $imagePath = 'images/' . $fileName;
-
-        // перемещаем файл из временной директории в нашу
-        move_uploaded_file($image['tmp_name'], $imagePath);
+        $imagePath = uploadImage($image);
 
         $query = $db->prepare("INSERT INTO posts (title, description, content, user_id, image_path) VALUES (:title, :description, :content, :user_id, :image_path)");
         $query->execute([

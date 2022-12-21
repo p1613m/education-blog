@@ -10,6 +10,7 @@ if(!$post) {
 ?>
 
 <h1><?= $post['title'] ?></h1>
+<img src="<?= $post['image_path'] ?>" alt="" style="width: 400px">
 <p>
     <b><?= $post['date'] ?></b>
     <a href="index.php?user_id=<?= $post['author']['id'] ?>"><?= $post['author']['name'] ?></a>
