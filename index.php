@@ -32,8 +32,14 @@ $posts = $db->query($sqlString)->fetchAll();
         <img src="<?= $post['image_path'] ?>" alt="" style="width: 300px">
         <h2><?= $post['title'] ?></h2>
         <p>
+            <a href="index.php?user_id=<?= $post['author']['id'] ?>" class="author">
+                <?php if($post['author']['avatar_path']): ?>
+                    <img src="<?= $post['author']['avatar_path'] ?>" alt="">
+                <?php endif; ?>
+                <?= $post['author']['name'] ?>
+            </a>
+            <br>
             <b><?= $post['date'] ?></b>
-            <a href="index.php?user_id=<?= $post['author']['id'] ?>"><?= $post['author']['name'] ?></a>
         </p>
         <p><?= $post['description'] ?></p>
         <p><a href="post.php?id=<?= $post['id'] ?>">Read more...</a></p>

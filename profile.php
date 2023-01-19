@@ -16,6 +16,17 @@ if(isset($_POST['submit'])) {
     $password = $_POST['password'];
     $newPassword = $_POST['new_password'];
     $newPasswordConfirm = $_POST['new_password_confirm'];
+    $avatar = $_FILES['avatar'];
+
+    if($avatar['size']) {
+        if($avatar['size'] > 1 * 1024 * 1024) {
+            $errors['avatar'] = 'Incorrect file size';
+        }
+
+        if($avatar['type'] !== 'image/png' && $avatar['type'] !== 'image/jpeg') {
+            $errors['avatar'] = 'Incorrect file type';
+        }
+    }
 
     // Проверка длины строки name
     $nameLen = mb_strlen($name);
@@ -60,16 +71,30 @@ if(isset($_POST['submit'])) {
 
     // если нет ошибок
     if(count($errors) === 0) {
+        $avatarPath = $user['avatar_path'];
+        if($avatar['size']) {
+            @unlink($avatarPath);
+            $avatarPath = uploadImage($avatar);
+            $user['avatar_path'] = $avatarPath;
+        }
+
+        if(isset($_POST['avatar_delete'])) {
+            @unlink($avatarPath);
+            $avatarPath = null;
+            $user['avatar_path'] = null;
+        }
+
         // если указан новый пароль, то заполняем его хэш, иначе берем старый хэш из БД
         $password = $newPassword ? md5($newPassword) : $user['password'];
         // подготовка запроса
-        $query = $db->prepare("UPDATE users SET name = :name, email = :email, password = :password WHERE id = :user_id");
+        $query = $db->prepare("UPDATE users SET name = :name, email = :email, password = :password, avatar_path = :avatar_path WHERE id = :user_id");
         // выполнение запроса
         $query->execute([
+            'user_id' => $user['id'],
             'name' => $name,
             'email' => $email,
             'password' => $password,
-            'user_id' => $user['id']
+            'avatar_path' => $avatarPath,
         ]);
 
         // флаг успешного сохранения для вывода сообщения
@@ -80,12 +105,26 @@ if(isset($_POST['submit'])) {
 
 <h1>Profile</h1>
 <?= isset($successUpdate) ? 'Success update' : '' ?>
-<form action="profile.php" method="post" novalidate>
+<form action="profile.php" method="post" novalidate enctype="multipart/form-data">
     <label>
         Name:<br>
         <input type="text" name="name" value="<?= $name ?>">
         <?= $errors['name'] ?? '' ?>
     </label><br>
+    <label>
+        Avatar:<br>
+        <?php if($user['avatar_path']): ?>
+            <img src="<?= $user['avatar_path'] ?>" alt="" style="width: 200px;display: block"><br>
+        <?php endif; ?>
+        <input type="file" name="avatar">
+        <?= $errors['avatar'] ?? '' ?>
+    </label><br>
+    <?php if($user['avatar_path']): ?>
+        <label>
+            <input type="checkbox" name="avatar_delete"> Delete avatar
+        </label>
+        <br>
+    <?php endif; ?>
     <label>
         Email:<br>
         <input type="text" name="email" value="<?= $email ?>">
